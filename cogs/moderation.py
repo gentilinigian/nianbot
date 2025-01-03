@@ -1,6 +1,7 @@
 import discord
 import re
 import asyncio
+import traceback
 from discord.ext import commands
 from datetime import datetime, timedelta
 from utils import permissions, utils, dataIO
@@ -101,7 +102,8 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             raise Exception(f'I don\'t have permission to ban {member.nick if member.nick is not None else member.name}')
         except Exception as e:
-            print(str(e))
+            print(''.join(traceback.format_tb(e.__traceback__)))
+            print(f"Error: {str(e)}")
             raise Exception(f'There was an error while trying to warn the user\nThe user may have been warned anyway. Please check the logs.')
             
 
