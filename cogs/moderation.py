@@ -53,7 +53,6 @@ class Moderation(commands.Cog):
         self.bot = bot
         self.config = dataIO.get_Info("config.json")
 
-     
     async def check_status(self, ctx, member, reason:str = None):
         user = self.bot.ww.dbh.get_alarmed_user_by_id(member.id)
 
@@ -65,27 +64,46 @@ class Moderation(commands.Cog):
                 await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED ONCE```')
                 await self.unmute(ctx, member=member, no_action_message=True)
                 await ctx.send(utils.actionmessage("warned"))
-                await member.send(f'This is the first time that you get warned, next time you\'ll be muted') if reason is None or len(reason) < 1 else await member.send("WARN:\n" + reason)
+                try:
+                    if reason is None or len(reason) < 1:
+                        await member.send('This is the first time that you get warned, next time you\'ll be muted')
+                    else:
+                        await member.send("WARN:\n" + reason)
+                except (discord.HTTPException, discord.Forbidden):
+                    await ctx.send("Could not send DM to user, but warning was applied")
+
             if user["strikes"] == 2:
                 await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED TWICE```')
                 await ctx.send(utils.actionmessage("warned"))
-                await asyncio.gather(
-                    self.mute(ctx, member=member, time=str(5), reason=reason or "warned 2 times", no_action_message=True),
-                    member.send(f'This is the second time that you get warned, you\'ll be muted for 5 hours.\n'
-                                f'next time you may be **banned!!** for ever. ') if reason is None or len(reason) < 1 else member.send("WARN:\n" + reason)
-                )
+                await self.mute(ctx, member=member, time=str(5), reason=reason or "warned 2 times", no_action_message=True)
+                try:
+                    if reason is None or len(reason) < 1:
+                        await member.send('This is the second time that you get warned, you\'ll be muted for 5 hours.\n'
+                                        'next time you may be **banned!!** for ever. ')
+                    else:
+                        await member.send("WARN:\n" + reason)
+                except (discord.HTTPException, discord.Forbidden):
+                    await ctx.send("Could not send DM to user, but warning and mute were applied")
+
             if user["strikes"] == 3:
                 await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED 3 TIMES```')
                 await self.ban(ctx, member=member.id, reason=reason or "warned 3 times", no_action_message=True)
                 await ctx.send(utils.actionmessage("warned"))
-                await member.send(f'This is the third time that you get warned, you are banned from the server\n'
-                                f'the mods will talk about that.') if reason is None or len(reason) < 1 else await member.send("WARN:\n" + reason)
-        except discord.HTTPException:            
-            raise Exception('Could not send dm to the user, but **warned** anyway kekw')
+                try:
+                    if reason is None or len(reason) < 1:
+                        await member.send('This is the third time that you get warned, you are banned from the server\n'
+                                        'the mods will talk about that.')
+                    else:
+                        await member.send("WARN:\n" + reason)
+                except (discord.HTTPException, discord.Forbidden):
+                    await ctx.send("Could not send DM to user, but warning and ban were applied")
+
         except discord.Forbidden:
             raise Exception(f'I don\'t have permission to ban {member.nick if member.nick is not None else member.name}')
         except Exception as e:
-            raise Exception(f'error while trying to warn the user\n{str(e)}\nuser may have been wanred anyway please check')
+            print(str(e))
+            raise Exception(f'There was an error while trying to warn the user\nThe user may have been warned anyway. Please check the logs.')
+            
 
     @commands.command(
         name='warn',
