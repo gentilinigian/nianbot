@@ -62,7 +62,10 @@ class Moderation(commands.Cog):
         
         try:
             if user["strikes"] == 1:
-                await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED ONCE```')
+                try:
+                    await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED ONCE```')
+                except AttributeError:
+                    print(f"Warning: log_channel is None or not accessible, status {self.bot.log_channel}")
                 await self.unmute(ctx, member=member, no_action_message=True)
                 await ctx.send(utils.actionmessage("warned"))
                 try:
@@ -74,7 +77,10 @@ class Moderation(commands.Cog):
                     await ctx.send("Could not send DM to user, but warning was applied")
 
             if user["strikes"] == 2:
-                await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED TWICE```')
+                try:
+                    await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED TWICE```')
+                except AttributeError:
+                    print(f"Warning: log_channel is None or not accessible, status {self.bot.log_channel}")
                 await ctx.send(utils.actionmessage("warned"))
                 await self.mute(ctx, member=member, time=str(5), reason=reason or "warned 2 times", no_action_message=True)
                 try:
@@ -87,7 +93,10 @@ class Moderation(commands.Cog):
                     await ctx.send("Could not send DM to user, but warning and mute were applied")
 
             if user["strikes"] == 3:
-                await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED 3 TIMES```')
+                try:
+                    await self.bot.log_channel.send(f'```❗{member.name} HAS BEEN WARNED 3 TIMES```')
+                except AttributeError:
+                    print(f"Warning: log_channel is None or not accessible, status {self.bot.log_channel}")
                 await self.ban(ctx, member=member.id, reason=reason or "warned 3 times", no_action_message=True)
                 await ctx.send(utils.actionmessage("warned"))
                 try:
