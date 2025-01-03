@@ -29,27 +29,31 @@ class NianBot(AutoShardedBot):
 
         if not hasattr(self, 'main_guild'):
             self.main_guild = self.get_guild(684039093927280664)
+            print(f"[*]Main guild status: {self.main_guild}")
 
         if not hasattr(self, 'log_channel'):
             self.log_channel = self.get_channel(696333346577317998)
+            print(f"[*]Log channel status: {self.log_channel}")
 
         if not hasattr(self, 'warn_channel'):
             self.warn_channel = self.get_channel(727460706072526858)
+            print(f"[*]Warn channel status: {self.warn_channel}")
 
         if not hasattr(self, 'videos_channel_std'):
             self.videos_channel_std = self.get_channel(684040996581015572)
+            print(f"[*]Videos channel status: {self.videos_channel_std}")
 
         if not hasattr(self, 'videos_channel_genshin'):
             self.videos_channel_genshin = self.get_channel(764419321841057792)
-
-        #if not hasattr(self, 'news_channel'):
-            #self.news_channel = self.get_channel(684405119840026734)
+            print(f"[*]Genshin videos channel status: {self.videos_channel_genshin}")
 
         if not hasattr(self, 'questions_channel'):
             self.questions_channel = self.get_channel(828620830878728235)
+            print(f"[*]Questions channel status: {self.questions_channel}")
 
         if not hasattr(self, 'answers_channel'):
             self.answers_channel = self.get_channel(735536183043424287)
+            print(f"[*]Answers channel status: {self.answers_channel}")
 
         if self.config.status_type == "idle":
             status_type = discord.Status.idle
@@ -77,6 +81,7 @@ class NianBot(AutoShardedBot):
 
         if not self.iw.is_running():
             self.iw.start_question_picker()
+
 
     async def on_guild_join(self, guild):
         if not self.config.join_message:
